@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <h1><%= title %></h1>
+    <form method="POST", action="/new" class="form">
+        <label for="author">Name</label>
+        <input type="text" name="message-author" id="message-author" maxlength="60">
+        <label for="message">Message</label>
+        <textarea name="message-text" id="message-text" maxlength="1000"></textarea>
+        <button>SUBMIT</button>
+    </form> 
+</body>
+</html>
