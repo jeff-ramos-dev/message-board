@@ -1,21 +1,34 @@
 var express = require('express');
 var router = express.Router();
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
+const uri = process.env.MONGO_URI;
+const client = new MongoClient(uri);
 
-const messages = [{
-  text: "Hi there!",
-  user: "Armando",
-  added: new Date()
-},
-{
-  text: "Hello World!",
-  user: "Charles",
-  added: new Date()
-}]
+async function connectToDatabase() {
+  try {
+    await client.connect();
+    console.log('connected to MongoDB');
+    const database = client.db('messages');
+    return database;
+  } catch (err) {
+    throw err;
+  }
+}
+const db = connectToDatabase();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-
-  res.render('index', { title: 'Message Board', messages: messages });
+router.get('/', async function(req, res, next) {
+  try {
+    const database = await db;
+    const messagesCollection = database.collection('messages');
+    const messages = await messagesCollection.find().toArray();
+    console.log(messages);
+    res.render('index', { title: 'Message Board', messages: messages });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 /* GET new message form */
@@ -24,14 +37,22 @@ router.get('/new', function(req, res, next) {
 });
 
 /* Receive POST request form form */
-router.post('/new', function(req, res, next) {
-  console.log(req.body['message-author'], req.body['message-text'])
-  messages.push({
+router.post('/new', async function(req, res, next) {
+  const newMessage = {
     text: req.body['message-text'],
-    user: req.body['message-author'],
-    added: new Date()
-  });
-  res.redirect('/');
+    author: req.body['message-author'],
+    date: new Date(),
+  };
+  
+  try {
+    const database = await db;
+    const messagesCollection = database.collection('messages');
+    await messagesCollection.insertOne(newMessage);
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 module.exports = router;

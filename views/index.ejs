@@ -11,8 +11,9 @@
     <ul class="message-list">
     <% for (let i = 0; i < messages.length; i++) { %>
         <li class="message">
-          <h2 class="message-author"><%= messages[i].user %></h2>
+          <h2 class="message-author"><%= messages[i].author %></h2>
           <p class="message-text"><%= messages[i].text %></p>
+          <p class="message-date"><%= messages[i].date.toString().slice(0,24) %></p>
         </li>
       <% } %>
     </ul>
